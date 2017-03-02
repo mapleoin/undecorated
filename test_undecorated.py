@@ -37,6 +37,15 @@ def decorate_with_params(*d_args, **d_kwargs):
     return decorator
 
 
+def decorate_with_callback(call_back, *d_args, **d_kwargs):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            return f(*args, **kwargs) + call_back(*d_args, **d_kwargs)
+        return wrapper
+    return decorator
+
+
 def f(a, b=2):
     return ('original', )
 
@@ -54,6 +63,14 @@ def test_with_params():
     decorated = decorate_with_params('a', kwarg1='b')(f)
 
     assert decorated(1, 2) == ('original', 'a', ('kwarg1', 'b'))
+    assert undecorated(decorated) is f
+    assert undecorated(decorated)(None) == ('original', )
+
+
+def test_with_callback():
+    decorated = decorate_with_callback(lambda: ('b',))(f)
+
+    assert decorated(1, 2) == ('original', 'b')
     assert undecorated(decorated) is f
     assert undecorated(decorated)(None) == ('original', )
 

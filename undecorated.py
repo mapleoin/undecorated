@@ -38,6 +38,8 @@ def undecorated(o):
         return
 
     if closure:
+        closure = list(closure)
+        closure.reverse()
         for cell in closure:
             # avoid infinite recursion
             if cell.cell_contents is o:
